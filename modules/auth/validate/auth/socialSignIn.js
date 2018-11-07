@@ -1,0 +1,35 @@
+'use strict';
+
+exports.socialSignIn = function (req, res, next) {
+
+  var schema = {
+    'email': {
+      notEmpty: true,
+      errorMessage: 'Email is required.',
+      isEmail: {
+        errorMessage: 'Please enter correct email id'
+      },
+      isLength: {
+        options: [{ max: 128 }],
+        errorMessage: 'Email length should not be greater than 128 characters.'
+      }
+    },
+    'id': {
+      notEmpty: true,
+      errorMessage: 'id is required.',      
+    },
+    'provider': {
+      notEmpty: true,
+      errorMessage: 'provider is required.'      
+    }
+  };
+
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (errors) {
+    res.status(Boom.VALIDATION_FAILED.statusCode).json(_.extend(Boom.VALIDATION_FAILED, {result: errors}));
+  } else {
+    next();
+  }
+};
+

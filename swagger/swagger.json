@@ -1,0 +1,21 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "version": "1.0.0",
+    "title": "API Documentation"
+  },
+  "tags": [
+    {
+      "name": "User authentication",
+      "description": ""
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "host": "localhost:8443",
+  "basePath": "/",
+  "paths": {
+  }
+}

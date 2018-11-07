@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for modules/stratagy.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">modules/</a> stratagy.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">13.95% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>6/43</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/25</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">13.95% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>6/43</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict';
+&nbsp;
+const path = require('path'),
+	config = require(path.resolve('config/config')),
+	Boom = require(path.resolve('languages/en/errors')),
+	Session = require(path.resolve('models/Session'));
+&nbsp;
+&nbsp;
+exports.isAuthorized = <span class="fstat-no" title="function not covered" >function(req, res, next){</span>
+	
+<span class="cstat-no" title="statement not covered" >	checkToken(req, res, [1,2,3], <span class="fstat-no" title="function not covered" >function(err){</span></span>
+<span class="cstat-no" title="statement not covered" >		if(err){</span>
+<span class="cstat-no" title="statement not covered" >			return res.status(Boom.LOGIN_REQUIRED.statusCode).json(Boom.LOGIN_REQUIRED);</span>
+		} else {
+<span class="cstat-no" title="statement not covered" >			next();</span>
+		}
+	});
+&nbsp;
+}; // End isAuthorized
+&nbsp;
+exports.isUserDataFound = <span class="fstat-no" title="function not covered" >function(req, res, next){</span>
+	
+<span class="cstat-no" title="statement not covered" >	checkToken(req, res, [1,2,3], <span class="fstat-no" title="function not covered" >function(err){</span></span>
+<span class="cstat-no" title="statement not covered" >		next();</span>
+	});
+&nbsp;
+}; // End isUserDataFound
+&nbsp;
+exports.isAdmin = <span class="fstat-no" title="function not covered" >function(req, res, next) {</span>
+	// parse admin type
+<span class="cstat-no" title="statement not covered" >	checkToken(req, res, [2,3], <span class="fstat-no" title="function not covered" >function(err){</span></span>
+<span class="cstat-no" title="statement not covered" >		if(err){</span>
+<span class="cstat-no" title="statement not covered" >			return res.status(Boom.LOGIN_REQUIRED.statusCode).json(Boom.LOGIN_REQUIRED);</span>
+		} else {
+<span class="cstat-no" title="statement not covered" >			next();</span>
+		}
+	});
+}; // End isAdmin
+&nbsp;
+exports.isSuperAdmin = <span class="fstat-no" title="function not covered" >function(req, res, next) {</span>
+	// parse superadmin type
+<span class="cstat-no" title="statement not covered" >	checkToken(req, res, [3], <span class="fstat-no" title="function not covered" >function(err){</span></span>
+<span class="cstat-no" title="statement not covered" >		if(err){</span>
+<span class="cstat-no" title="statement not covered" >			return res.status(Boom.LOGIN_REQUIRED.statusCode).json(Boom.LOGIN_REQUIRED);</span>
+		} else {
+<span class="cstat-no" title="statement not covered" >			next();</span>
+		}
+	});
+}; // End isSuperAdmin
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >function checkToken(req, res, types, callback){</span>
+	// check header or url parameters or post parameters for token
+<span class="cstat-no" title="statement not covered" >	var token = req.body.token || req.query.token || req.headers['x-access-token'];</span>
+	// decode token
+<span class="cstat-no" title="statement not covered" >	if (token) {</span>
+	// verifies secret and checks exp
+<span class="cstat-no" title="statement not covered" >		Session.findByToken(false, token, <span class="fstat-no" title="function not covered" >function(err,obj) {</span></span>
+<span class="cstat-no" title="statement not covered" >			if (err) {</span>
+<span class="cstat-no" title="statement not covered" >				callback(err);</span>
+			} else <span class="cstat-no" title="statement not covered" >if (!obj.length){</span>
+<span class="cstat-no" title="statement not covered" >				return res.status(Boom.LOGIN_REQUIRED.statusCode).json(Boom.LOGIN_REQUIRED);</span>
+			} else {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >				let user = obj[0];</span>
+<span class="cstat-no" title="statement not covered" >				if(user.message) {</span>
+<span class="cstat-no" title="statement not covered" >					return res.status(401).json({status : 0, statusCode : 401, error : "Unauthorized", message : user.message });</span>
+				}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >				let currTime = Math.round(+new Date()/1000);</span>
+<span class="cstat-no" title="statement not covered" >				let expTime = user.exp_time;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >				let validType = types.indexOf(user.meta.type) &gt;= 0 ? 1 : 0;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >				if(currTime &gt; expTime){</span>
+<span class="cstat-no" title="statement not covered" >					Session.deleteByToken(false, token, <span class="fstat-no" title="function not covered" >function(err){</span></span>
+<span class="cstat-no" title="statement not covered" >						if(err){</span>
+<span class="cstat-no" title="statement not covered" >							console.log(err);</span>
+						}
+					});
+<span class="cstat-no" title="statement not covered" >					return res.status(Boom.LOGIN_REQUIRED.statusCode).json(Boom.LOGIN_REQUIRED);</span>
+				} else <span class="cstat-no" title="statement not covered" >if (!validType){</span>
+<span class="cstat-no" title="statement not covered" >					return res.status(Boom.NOT_ALLOWED.statusCode).json(Boom.NOT_ALLOWED);</span>
+				} else {
+<span class="cstat-no" title="statement not covered" >					req.user = user.meta;</span>
+<span class="cstat-no" title="statement not covered" >					callback(null);</span>
+				}
+			}
+		});
+  } else {
+  	// return res.status(Boom.LOGIN_REQUIRED.statusCode).json(Boom.LOGIN_REQUIRED);
+<span class="cstat-no" title="statement not covered" >  	callback(' for isUserDataFound ');</span>
+  }
+&nbsp;
+} // End checkToken</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Aug 13 2018 12:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

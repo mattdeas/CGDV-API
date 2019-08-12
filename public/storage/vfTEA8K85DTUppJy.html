@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ethiopia Vaccination Card Ownership and Availability</title>
+  <script type="text/javascript" src="http://d3js.org/d3.v4.min.js"></script>
+  <style type="text/css">
+  	div.content { width: 1000px }
+		div.story {
+		  font-family: sans-serif;
+		  margin-left: 20px;
+		  margin-right: 40px;
+			font-size: 25px;
+		  max-width: 500px;
+		  min-width: 100px;
+		}
+  	.axis .domain {display: none;}
+  	.line {
+						stroke: teal;
+						stroke-width: 2.5;
+						stroke-dasharray: 2, 3;
+					}
+		.lineLabel {
+				font-family: Helvetica, sans-serif;
+				font-size: 12px;
+				fill: "#330022";
+			}
+		.label {
+				font-family: sans-serif;
+				font-size: 20px;
+				fill: black;
+				font-weight: bold;
+			}
+		input[type=radio] {
+				margin-left: 40px;
+				font-family: sans-serif;
+				font-size: 20px;
+				fill: black;
+				font-weight: bold;
+		}
+  </style>
+</head>
+<body>
+	<div class = "content">
+	<h1 align="center">Mother’s Education the most significant differentiator in tracking Immunization Status in Ethiopia</h1>
+	<table>
+		<td>
+			<div class = "story">
+				Vaccination card is important in helping parents to keep a track of their children immunization status. In Ethiopia, vaccination card penetration rate varies moderately across – location and birth order and significantly across – residence: rural/ urban, mother’s education and family wealth. Interesting to note that, about 11.4% of children aged 12-23 months lose their vaccination cards regardless of social and economic status and this figure goes upto 17.6% for children aged 24-35 months.
+			</div>
+		</td>
+		<td>
+			<img src="http://34.205.15.39:8080/storage/Ly8yKMoLX5r8SzEb.png" width="500" height="600">
+		</td>
+	</table>
+	<p>
+		<input type="radio" name="filterPreset" value="0" checked="true"> Children aged 12-23 Months
+		<input type="radio" name="filterPreset" value="1"> Children aged 24-35 Months
+	</p>	
+  <script type="text/javascript">
+  //Width and height
+  var w = 1000;
+  var h = 600;
+  //Original data
+  var dataset = [
+      { lost: 14.8, exist: 30.9, no: 54.3, category: "Male"},
+			{ lost: 8.4,  exist: 36.9, no: 54.7, category: "Female"},
+			{ lost: 0,  exist: 0, no: 0, category: " "},
+      { lost: 13.4, exist: 35.0, no: 51.6, category: "1"},
+			{ lost: 9.1,  exist: 42.1, no: 48.8, category: "2-3"},
+			{ lost: 11.8,  exist: 35.6, no: 52.6, category: "4-5"},
+			{ lost: 12.2,  exist: 23.7, no: 64.1, category: "6+"},
+			{ lost: 0,  exist: 0, no: 0, category: "  "},
+      { lost: 10, exist: 67.2, no: 22.8, category: "Urban"},
+			{ lost: 11.5,  exist: 29.8, no: 58.7, category: "Rural"},
+			{ lost: 0,  exist: 0, no: 0, category: "   "},
+      { lost: 11.6, exist: 28.8, no: 59.6, category: "No Education"},
+			{ lost: 10.9,  exist: 38.8, no: 50.3, category: "Primary"},
+			{ lost: 7.3,  exist: 57.0, no: 35.7, category: "Secondary"},
+			{ lost: 16.2,  exist: 59.1, no: 24.7, category: "More Than Secondary"},
+			{ lost: 0,  exist: 0, no: 0, category: "    "},
+      { lost: 12.8, exist: 17.3, no: 69.9, category: "Lowest"},
+			{ lost: 7.4,  exist: 32.8, no: 59.8, category: "Second"},
+			{ lost: 18.9,  exist: 28.8, no: 52.3, category: "Middle"},
+			{ lost: 5.2,  exist: 44.8, no: 50.0, category: "Fourth"},
+			{ lost: 10.2,  exist: 60.3, no: 29.5, category: "High"}];
+  //margin
+ 	var margin = {top: 20, right: 150, bottom: 100, left: 50};
+  //Set up scales
+  var xScale = d3.scaleBand()
+    .domain(dataset.map(function(d) { return d.category; }))
+    .rangeRound([margin.left, w-margin.right])
+    .paddingInner(0.05);
+
+  var yScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([h-margin.bottom, margin.top]);  // <-- Flipped vertical scale
+      
+  //Easy colors accessible via a 10-step ordinal scale
+  var colors = d3.scaleOrdinal()
+  							 .range(["#c7ddfe", "#ff8c00", "#660033"]);
+
+  //Create SVG element
+  var svg = d3.select("body")
+              .append("svg")
+              .attr("width", w)
+              .attr("height", h);
+              //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+  //Set up stack method
+  var stack = d3.stack()
+                .keys([ "lost", "exist", "no"]);
+
+  //Data, stacked
+  var series = stack(dataset);
+  // Add a group for each row of data
+  var groups = svg.selectAll("g")
+      .data(series)
+      .enter()
+      .append("g")
+      .style("fill", function(d, i) {
+          return colors(i);
+      });
+
+  // Add a rect for each data value
+  var rects = groups.selectAll("rect")
+      .data(function(d) { return d; })
+      .enter()
+      .append("rect")
+      .attr("x", function(d) {
+          return xScale(d.data.category);
+      })
+      .attr("y", function(d) {
+          return yScale(d[1]);  // <-- Changed y value
+      })
+      .attr("height", function(d) {
+          return yScale(d[0]) - yScale(d[1]);  // <-- Changed height value
+      })
+      .attr("width", xScale.bandwidth())
+      .on("mouseover", function() { tooltip.style("display", null); })
+  		.on("mouseout", function() { tooltip.style("display", "none"); })
+	    .on("mousemove", function(d) {
+	      //console.log(d);
+	      var xPosition = d3.mouse(this)[0] - 35;
+	      var yPosition = d3.mouse(this)[1] - 45;
+	      tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+	      tooltip.select("text").text(d3.format(".1%")((d[1]-d[0])/100));
+	    });
+
+	// hover tooltip
+  var tooltip = svg.append("g")
+    .attr("class", "tooltip")
+    .style("display", "none"); 
+  tooltip.append("rect")
+    .attr("width", 80)
+    .attr("height", 40)
+    .attr("fill", "white")
+    .style("opacity", 0.5);
+  tooltip.append("text")
+    .attr("x", 43)
+    .attr("dy", "1.2em")
+    .style("text-anchor", "middle")
+    .attr("font-size", "25px")
+    .attr("font-weight", "bold")
+    .attr("font-family", "sans-serif");
+   // legend
+  var legend = svg.append("g")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 10)
+    .attr("text-anchor", "end")
+    .selectAll("g")
+    .data(["no", "exist", "lost"])
+    .enter()
+    .append("g")
+    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+  legend.append("rect")
+      .attr("x", w - 25)
+      .attr("y", 13)
+      .attr("width", 19)
+      .attr("height", 19)
+      .attr("fill", d3.scaleOrdinal()
+    							    .range(["#660033", "#ff8c00", "#c7ddfe"]));
+  legend.append("text")
+      .attr("x", w - 40)
+      .attr("y", 20)
+      .attr("dy", "0.32em")
+      .attr("font-size", 15)
+      .text(function(d, i) { return ["% Never had", 
+      															 "% Possess", 
+      															 "% Lost"][i]; });
+	// X axis
+  svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + (h-margin.bottom) + ")")
+    .call(d3.axisBottom(xScale).tickFormat(d => d+""))
+    .selectAll("text")
+    .attr("transform", function(d) {
+                return "rotate(-20)" 
+                });
+
+  // Y axis
+  svg.append("g")
+     .attr("class", "axis")
+     .attr("transform", "translate("+margin.left+",0)")
+     .call(d3.axisLeft(yScale)
+     				 .tickFormat(d => d+"%"));
+
+	line = d3.line()
+					 .x(function(d) { return xScale(d.category); })
+					 .y(function(d) { return yScale(11.4); });
+					//Create line
+	svg.append("line")
+		.attr("class", "line a")
+		.attr("x1", margin.left+6)
+		.attr("x2", w-margin.right-4)
+		.attr("y1", yScale(11.4))
+		.attr("y2", yScale(11.4));
+	svg.append("text")
+		 .attr("class", "lineLabel a")
+		 .attr("x", w-margin.right)
+		 .attr("y", yScale(11.4)-10)
+		 .text("11.4% of children aged");
+	svg.append("text")
+		 .attr("class", "lineLabel b")
+		 .attr("x", w-margin.right)
+		 .attr("y", yScale(11.4))
+		 .text("12-23 months lost their");
+	svg.append("text")
+		 .attr("class", "lineLabel c")
+		 .attr("x", w-margin.right)
+		 .attr("y", yScale(11.4)+10)
+		 .text("vaccination card.");
+
+	svg.append("text")
+		 .attr("class", "label")
+		 .attr("x", margin.right-75)
+		 .attr("y", h-50)
+		 .text("Sex");	
+	svg.append("text")
+		 .attr("class", "label")
+		 .attr("x", margin.right+40)
+		 .attr("y", h-50)
+		 .text("Birth Order");	
+	svg.append("text")
+		 .attr("class", "label")
+		 .attr("x", margin.right+190)
+		 .attr("y", h-50)
+		 .text("Residence");	
+	svg.append("text")
+		 .attr("class", "label")
+		 .attr("x", margin.right+310)
+		 .attr("y", h-50)
+		 .text("Mother's Education");	
+	svg.append("text")
+		 .attr("class", "label")
+		 .attr("x", margin.right+530)
+		 .attr("y", h-50)
+		 .text("Wealth Quintile");	
+	// update
+	d3.selectAll("input")
+		.on("click", function() {
+			var threshold = +d3.select(this).node().value;
+			if(threshold == 0){
+					svg.selectAll("line")
+						 .filter(".a")
+				     .transition()
+			       .duration(1500)
+ 						 .attr("y1", yScale(11.4))
+						 .attr("y2", yScale(11.4));
+					svg.selectAll("text").filter(".a")
+						 .transition()
+			       .duration(1500)
+						 .attr("y", yScale(11.4)-10)
+						 .text("11.4% of children aged");
+					svg.selectAll("text").filter(".b")
+						 .transition()
+			       .duration(1500)
+						 .attr("y", yScale(11.4))
+						 .text("12-23 months lost their");
+					svg.selectAll("text").filter(".c")
+						 .transition()
+			       .duration(1500)
+						 .attr("y", yScale(11.4)+10)
+						 .text("vaccination card.");
+				//update datasets
+				dataset = [
+      { lost: 14.8, exist: 30.9, no: 54.3, category: "Male"},
+			{ lost: 8.4,  exist: 36.9, no: 54.7, category: "Female"},
+			{ lost: 0,  exist: 0, no: 0, category: " "},
+      { lost: 13.4, exist: 35.0, no: 51.6, category: "1"},
+			{ lost: 9.1,  exist: 42.1, no: 48.8, category: "2-3"},
+			{ lost: 11.8,  exist: 35.6, no: 52.6, category: "4-5"},
+			{ lost: 12.2,  exist: 23.7, no: 64.1, category: "6+"},
+			{ lost: 0,  exist: 0, no: 0, category: "  "},
+      { lost: 10, exist: 67.2, no: 22.8, category: "Urban"},
+			{ lost: 11.5,  exist: 29.8, no: 58.7, category: "Rural"},
+			{ lost: 0,  exist: 0, no: 0, category: "   "},
+      { lost: 11.6, exist: 28.8, no: 59.6, category: "No Education"},
+			{ lost: 10.9,  exist: 38.8, no: 50.3, category: "Primary"},
+			{ lost: 7.3,  exist: 57.0, no: 35.7, category: "Secondary"},
+			{ lost: 16.2,  exist: 59.1, no: 24.7, category: "More Than Secondary"},
+			{ lost: 0,  exist: 0, no: 0, category: "    "},
+      { lost: 12.8, exist: 17.3, no: 69.9, category: "Lowest"},
+			{ lost: 7.4,  exist: 32.8, no: 59.8, category: "Second"},
+			{ lost: 18.9,  exist: 28.8, no: 52.3, category: "Middle"},
+			{ lost: 5.2,  exist: 44.8, no: 50.0, category: "Fourth"},
+			{ lost: 10.2,  exist: 60.3, no: 29.5, category: "High"}];
+
+			}else{
+					svg.selectAll("line")
+						 .filter(".a")
+ 						 .transition()
+			       .duration(1500)
+ 						 .attr("y1", yScale(17.6))
+						 .attr("y2", yScale(17.6));
+					svg.selectAll("text").filter(".a")
+						 .transition()
+			       .duration(1500)
+						 .attr("y", yScale(17.6)-10)
+						 .text("17.6% of children aged");
+					svg.selectAll("text").filter(".b")
+						 .transition()
+			       .duration(1500)
+						 .attr("y", yScale(17.6))
+						 .text("24-35 months lost their");
+					svg.selectAll("text").filter(".c")
+						 .transition()
+			       .duration(1500)
+						 .attr("y", yScale(17.6)+10)
+						 .text("vaccination card.");
+				// update datasets
+				dataset = [
+      { lost: 17.4, exist: 17.7, no: 64.9, category: "Male"},
+			{ lost: 17.8,  exist: 16.7, no: 65.5, category: "Female"},
+			{ lost: 0,  exist: 0, no: 0, category: " "},
+      { lost: 17.5, exist: 28.2, no: 54.3, category: "1"},
+			{ lost: 20.7,  exist: 19.9, no: 59.4, category: "2-3"},
+			{ lost: 14.8,  exist: 13.3, no: 71.9, category: "4-5"},
+			{ lost: 16.7,  exist: 9.2, no: 74.1, category: "6+"},
+			{ lost: 0,  exist: 0, no: 0, category: "  "},
+      { lost: 14.1, exist: 57.4, no: 28.5, category: "Urban"},
+			{ lost: 18,  exist: 12.6, no: 69.4, category: "Rural"},
+			{ lost: 0,  exist: 0, no: 0, category: "   "},
+      { lost: 16.8, exist: 11.2, no: 72, category: "No Education"},
+			{ lost: 21.1,  exist: 21.0, no: 57.9, category: "Primary"},
+			{ lost: 15,  exist: 45.3, no: 39.7, category: "Secondary"},
+			{ lost: 3.4,  exist: 83.0, no: 13.6, category: "More Than Secondary"},
+			{ lost: 0,  exist: 0, no: 0, category: "    "},
+      { lost: 16, exist: 8.2, no: 75.8, category: "Lowest"},
+			{ lost: 24.1,  exist: 9.8, no: 66.1, category: "Second"},
+			{ lost: 15.4,  exist: 13.8, no: 70.8, category: "Middle"},
+			{ lost: 17.1,  exist: 15.0, no: 67.9, category: "Fourth"},
+			{ lost: 13,  exist: 53.2, no: 33.8, category: "High"}];
+			}
+
+    svg.selectAll("g")
+      .data(stack(dataset))
+      .selectAll("rect")
+      .data(function(d) { return d; })
+      .transition()
+			.duration(1500)
+      .attr("y", function(d) {
+          return yScale(d[1]);  // <-- Changed y value
+      })
+      .attr("height", function(d) {
+          return yScale(d[0]) - yScale(d[1]);  // <-- Changed height value
+      })
+		});
+
+
+	</script>
+	</div>
+	<p>Data source: <a href="https://dhsprogram.com/publications/publication-fr328-dhs-final-reports.cfm">Ethiopia Demographic and Health Survey 2016</a></p>
+</body>
+</html>

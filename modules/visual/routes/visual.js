@@ -12,12 +12,33 @@ module.exports = function(app) {
     // user Controller
     var visual = require('../controllers/visualController');
 
+    app.route('/api/visual/comment')
+        .get(
+            visual.getVisualCommentsList
+        );
+    app.route('/api/visual/comment')
+        .post(
+            stratagy.isAuthorized,
+            visual.VisualAddComment
+        );
+    app.route('/api/visual/comment/:id')
+    .put(
+        stratagy.isAuthorized,
+        visual.updateVisualComment
+    )
+    .delete(
+        stratagy.isAuthorized,
+        visual.deleteVisualComment
+    );
     app.route('/api/visual')
         .get(
             stratagy.isUserDataFound,
             visual.getVisualList
         );
-
+    app.route('/api/visualusers')
+    .get(
+        visual.getVisualUsers
+    );
     app.route('/api/visual')
         .post(
             stratagy.isAuthorized,

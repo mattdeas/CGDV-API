@@ -41,7 +41,7 @@ exports.getTeamMembers = function (req, res, next) {
 /**
  * set user in team or not
  *
- *
+ *   == 
  */
 exports.setInTeam = function (req, res, next) {    
   User.setInTeam(req.body, function (err, results) {

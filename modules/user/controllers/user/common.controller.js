@@ -28,3 +28,18 @@ exports.getUserProfile = function (req, res, next) {
   });
 
 }; 
+
+exports.getIPAddressInfo = function (req, res, next) {  
+  var ip = req.params.ipaddress ;
+  User.checkIPLogExists(null, ip, function (err, results) {
+    console.log(err, results)
+    if (err) {
+      next(err);
+    } else if (!results.length) {
+      return res.status(Boom.NO_DATA_FOUND.statusCode).json(Boom.NO_DATA_FOUND);
+    } else {
+      res.json({ status: 1, message: 'Success', data: results });
+    }
+  });
+
+}; 

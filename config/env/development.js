@@ -8,22 +8,23 @@ module.exports = {
   },
   postgres:{
     
-    host: 'ec2-54-225-98-131.compute-1.amazonaws.com',//'localhost',
-    port: 5432,
-    user: 'fhwctwfmhmnwut',//'postgres',
-    password: '38019844466d74ba96c193b6a739555a64a3ac9dde5ef462e9b184092959aeb2',//'',
-    database: 'daim47nk4i4lq1',//'cgdv',
-    ssl: true, //Only required for Heroku...
-    max: 10, // max number of clients in the pool
-    idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
-
-    //host: 'localhost',
+    //host: 'ec2-54-225-98-131.compute-1.amazonaws.com',//'localhost',
     //port: 5432,
-    //user: 'postgres',
-    //password: '',
-    //database: 'cgdv',
+    //user: 'fhwctwfmhmnwut',//'postgres',
+    //password: '38019844466d74ba96c193b6a739555a64a3ac9dde5ef462e9b184092959aeb2',//'',
+    //database: 'daim47nk4i4lq1',//'cgdv',
+    //ssl: true, //Only required for Heroku...
     //max: 10, // max number of clients in the pool
     //idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
+
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: 'root',
+    database: 'qed_june2019',
+    //database: 'qed_prod',
+    max: 10, // max number of clients in the pool
+    idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
   },
   logs:{
     activity:false,

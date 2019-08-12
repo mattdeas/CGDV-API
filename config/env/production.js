@@ -7,12 +7,11 @@ module.exports = {
     title: defaultEnvConfig.app.title + ' - Production Environment'
   },
   postgres:{
-    host: 'ec2-54-225-98-131.compute-1.amazonaws.com',//'localhost',
+    host: 'localhost',
     port: 5432,
-    user: 'fhwctwfmhmnwut',//'postgres',
-    password: '38019844466d74ba96c193b6a739555a64a3ac9dde5ef462e9b184092959aeb2',//'',
-    database: 'daim47nk4i4lq1',//'cgdv',
-    ssl: true, //Only required for Heroku...
+    user: 'postgres',
+    password: 'qed_prod',
+    database: 'qed_prod',
     max: 10, // max number of clients in the pool
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
   },

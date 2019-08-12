@@ -12,6 +12,10 @@ module.exports = function(app) {
     // user Controller
     var country = require('../controllers/countryController');
     
+    app.route('/api/countryFORVIZ')
+        .get(
+            country.getCountryListFORVIZ
+        );
     app.route('/api/country')
         .get(
             country.getCountryList

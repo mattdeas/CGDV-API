@@ -199,10 +199,35 @@ exports.getUserByType = function(data, callback) {
     }else{
         orderby = ` ORDER BY created_at ASC`    
     }
-    var query = `SELECT id, email, firstname, lastname, avatar, status, seq_no 
-                    FROM users 
+    var query = `SELECT u.id, u.email, u.firstname, u.lastname, u.avatar, u.status, u.seq_no,
+    (SELECT COUNT(ub.id) FROM user_badges ub WHERE ub.user_id = u.id and ub.ubadge_id = 1) as topcontrib
+                    FROM users u
                     WHERE type=${type} AND status=1`+search+orderby+`
                     LIMIT ${recordPerPage}
+                    OFFSET ${offset}` ;
+    pool.query(query, function(err, result) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, result.rows);
+        }
+    });
+}
+
+exports.getUsersAll = function(data, callback) {
+    var type = data.type ? parseInt(data.type, 10) : 1;
+    var offset = 0;
+    var page = data.page ? parseInt(data.page, 10) : 1;
+    var recordPerPage = data.recordPerPage ? parseInt(data.recordPerPage, 10) : 10;
+    if(page){
+        offset = (page-1)*recordPerPage;
+    }
+    var search = '';
+    
+    var query = `SELECT u.id, u.email, u.firstname, u.lastname
+                    FROM users u
+                    WHERE type=${type} AND status=1 `+search+`
+                    ORDER BY u.lastname ASC
                     OFFSET ${offset}` ;
     pool.query(query, function(err, result) {
         if (err) {
@@ -238,6 +263,46 @@ exports.chekcUserExists = function(user_id, callback) {
 }
 
 
+exports.checkIPLogExists = function(client, ipaddress, callback) {
+
+    var query = `
+    INSERT INTO ip_log(
+        ipaddress, datetime, stopshowing)
+    VALUES ( $1, NOW(), 'False')
+    ON CONFLICT (ipaddress)
+    DO UPDATE SET datetime = NOW(); 
+    SELECT stopshowing FROM ip_log WHERE ipaddress=$1;    
+    `;
+    var query2 = 'SELECT stopshowing FROM ip_log WHERE ipaddress=$1;   ';
+    if (client) {
+        console.log('client');
+        client.query(query, [ipaddress], function(err, result) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, result.rows);
+            }
+        });
+    } else {
+        console.log('pool')
+        pool.query(query, [ipaddress], function(err, result) {
+            if (err) {
+                //callback(err);
+            } else {
+                //callback(null, result.rows);
+            }
+        });
+
+        pool.query(query2, [ipaddress], function(err, result) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, result.rows);
+            }
+        });
+    }
+}
+
 /*
  * Model call from auth/activationController
  *
@@ -262,8 +327,8 @@ exports.activateUser = function(client, id, callback) {
  *
  */
 exports.changeStatus = function(id, status, callback) {
-
-    var query = 'UPDATE users SET status=$1,updated_at=Default WHERE id=$2';
+    console.log(status);
+    var query = 'UPDATE users SET status=$1, in_team=0, updated_at=Default WHERE id=$2';
     pool.query(query, [status, id], function(err, result) {
         if (err) {
             callback(err);
@@ -273,7 +338,17 @@ exports.changeStatus = function(id, status, callback) {
     });
 }
 
-
+exports.toggleTopContributor = function(id, status, callback) {
+    console.log(status);
+    var query = 'UPDATE users SET status=$1, in_team=0, updated_at=Default WHERE id=$2';
+    pool.query(query, [status, id], function(err, result) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, result);
+        }
+    });
+}
 
 /*
  * Model call from password/change.password.controller
@@ -354,8 +429,10 @@ exports.getUserProfile = function(client, id, callback) {
                   category_id,
                   country_id,
                   seq_no,
-                  role
-                FROM users                 
+                  role,
+                  (SELECT name FROM universities i WHERE u.university_id = i.id) AS university,
+                  (SELECT name FROM countries i WHERE u.country_id = i.id) AS country
+                FROM users u                 
                 WHERE id=$1`;
     if (client) {
         client.query(query, [id], function(err, result) {
@@ -438,6 +515,36 @@ exports.updateUser = (client, data, callback) => {
 
 }
 
+exports.setTopBadge = (data, callback) => {
+    var delQuery = "DELETE FROM user_badges WHERE user_id = $1";
+            var insQuery = "INSERT INTO user_badges (user_id,ubadge_id) VALUES ($1,1)";
+    var query = `
+    SELECT COUNT(id) AS badgecount FROM user_badges WHERE user_id = $1`;
+console.log('in top badge');
+    var dataArray = [
+        data.user_id
+    ];
+    
+    pool.query(query, dataArray, function(err, result) {
+        if (err) {
+            callback(err);
+        } else {
+            
+            if(Number(result.rows[0].badgecount > 0))
+            {
+                pool.query(delQuery,dataArray);
+            }
+            else
+            {
+                pool.query(insQuery,dataArray);
+            } 
+            callback(null, result);
+        }
+    });
+}
+
+
+
 
 exports.setInTeam = (data, callback) => {
     var query = `
@@ -462,6 +569,8 @@ exports.setInTeam = (data, callback) => {
         }
     });
 }
+
+
 
 exports.getTeamMembers = (data, callback) => {
     var query = `SELECT

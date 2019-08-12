@@ -16,4 +16,5 @@ module.exports = _.extend(
   require('./user/admin.register.controller'),
   require('./user/common.controller'),
   require('./user/user.team.controller'),
+  require('./user/user.badges.controller'),
 );

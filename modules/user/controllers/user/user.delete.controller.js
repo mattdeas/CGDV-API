@@ -15,6 +15,7 @@ const path = require('path'),
  */
 exports.deleteUser = function (req, res, next) {  
   var user_id = req.params.id;
+ 
   User.changeStatus(user_id, 0, function (err, results) {
     if (err) {
       if(err.detail.indexOf('is still referenced from')!== -1){        

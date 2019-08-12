@@ -86,6 +86,47 @@ exports.getCountry = function(data, callback) {
     });
 }
 
+exports.getCountryFORVIZ = function(data, callback) {
+    var offset = 0;
+    var page = data.page ? parseInt(data.page, 10) : 1;
+    var recordPerPage = data.recordPerPage ? parseInt(data.recordPerPage, 10) : 0;
+    if(page){
+        offset = (page-1)*recordPerPage;
+    }
+    var limit = '';
+    if(recordPerPage){
+    	limit += ` LIMIT ${recordPerPage} `;
+    }
+    var search = '';
+    if(data.id) {
+        search += `  AND id=${data.id}`;         
+    }
+    if(data.name) {
+        data.name = data.name.replace(/(\')+/g,"''");
+        search += `  AND name ILIKE '%${data.name}%'`;         
+    }
+    var orderby = '';
+    if(data.orderby){
+        var orderbydirection = data.orderbydirection ? data.orderbydirection.toUpperCase() : 'DESC'
+        orderby = ` ORDER BY ${data.orderby} ${orderbydirection}`
+    
+    }else{
+        orderby = ` ORDER BY name ASC`    
+    }
+    var query = `SELECT * 
+                    FROM countries 
+                    WHERE id IN (SELECT DISTINCT country_id FROM visual) `+search+orderby+
+                    limit+
+                    ` OFFSET ${offset}` ;
+    pool.query(query, function(err, result) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, result.rows);
+        }
+    });
+}
+
 
 exports.checkCountryExistsByName = function(name, callback) {
 

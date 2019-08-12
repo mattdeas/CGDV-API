@@ -7,6 +7,7 @@ const path = require('path'),
     pool = require(path.resolve('lib/db'));
 
 exports.addVisual = (client, data, callback) => {
+
     var query = `
         INSERT INTO
           visual
@@ -23,10 +24,12 @@ exports.addVisual = (client, data, callback) => {
               university_id,
               data_src,
               seq_no,
-              created_at
+              created_at,
+              description,
+              comments,
+              challenge_id
             )
-    VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW() ) RETURNING id`;
-
+    VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), $13, $14, $15 ) RETURNING id`;
 
     var dataArray = [
         data.title,
@@ -40,16 +43,47 @@ exports.addVisual = (client, data, callback) => {
         data.created_by_admin || 0,
         data.university_id,
         data.data_src,
-        data.seq_no
+        data.seq_no,
+        data.description,
+        data.comments,
+        data.challenge_id
     ];
-
+    
+    
     client.query(query, dataArray, function(err, result) {
         if (err) {
             callback(err);
         } else {
+            if(data.challenge_id != null )
+            {
+                var updatechallenge = "INSERT INTO challenge_visuals (challenge_id, viz_id, active) VALUES ($1, $2, 'true')"
+                var challArray = [data.challenge_id,result.rows[0].id];
+            
+                client.query(updatechallenge, challArray, function(err, result){});
+            }
+            if(data.selectedIds != null)
+            {
+                //console.log('IN SELECTEDIDS');
+                //console.log(data.selectedIds[0].id);
+                //console.log(data.selectedIds.length);
+                var i;
+                var updateUsers = "INSERT INTO visual_users(vizid, userid) VALUES ($1, $2)";
+                //console.log(data.selectedIds[].length);
+                for(i = 0; i < data.selectedIds.length; i++ )
+                {
+                    var usrArray = [result.rows[0].id, data.selectedIds[i].id];
+                    client.query(updateUsers, usrArray, function(err, result){});
+                }
+                
+            }
+
             callback(null, result.rows);
         }
     });
+
+    
+    
+
 }
 
 exports.visualSearchCount = function(data, callback) {
@@ -91,6 +125,7 @@ exports.visualSearchCount = function(data, callback) {
 }
 
 exports.getVisualList = function(data, callback) {
+    console.log(data);
     var type = data.type ? parseInt(data.type, 10) : 1;
     var offset = 0;
     var page = data.page ? parseInt(data.page, 10) : 1;
@@ -99,7 +134,7 @@ exports.getVisualList = function(data, callback) {
         offset = (page - 1) * recordPerPage;
     }
     var search = ' WHERE TRUE';
-
+    console.log('here is vis list',data.viz_id);
     if (data.viz_id) {
         search += `  AND V.id=${data.viz_id} `;
     }
@@ -118,6 +153,10 @@ exports.getVisualList = function(data, callback) {
     }
     if (data.is_featured == 0 || data.is_featured == 1) {
         search += `  AND V.is_featured=${data.is_featured} `;
+    }
+
+    if (data.challenge_id) {
+        search += ` AND V.id IN (SELECT viz_id FROM challenge_visuals WHERE challenge_id = ${data.challenge_id}  )`;
     }
 
     if (data.title) {
@@ -159,7 +198,14 @@ exports.getVisualList = function(data, callback) {
                         V.user_id,
                         CONCAT(USR.firstname, ' ', USR.lastname) AS username,
                         USR.avatar AS user_avatar,
-                        CASE WHEN U IS NOT NULL THEN 1 ELSE 0 END AS upvoted
+                        CASE WHEN U IS NOT NULL THEN 1 ELSE 0 END AS upvoted,
+                        v.description,
+                        v.comments,
+                        V.challenge_id,
+                        (SELECT COUNT(id) FROM visualcomment WHERE vizid = v.id) AS vnumcomments,
+                        (SELECT COUNT(b.id) FROM badge b INNER JOIN user_badges ub ON ub.id = b.id WHERE ub.user_id = V.user_id and ub.id = 1) as topcontrib,
+                        (SELECT COUNT(cw.challenge_id) FROM challenge_winners cw WHERE cw.first_user_id = V.user_id ) as winner,
+                        (SELECT COUNT(cw.challenge_id) FROM challenge_winners cw WHERE cw.second_user_id = V.user_id or cw.third_user_id = V.user_id) as runnerup
                         FROM visual V 
                         LEFT JOIN (
                             SELECT * 
@@ -186,7 +232,14 @@ exports.getVisualList = function(data, callback) {
                         V.seq_no,
                         V.user_id,
                         CONCAT(USR.firstname, ' ', USR.lastname) AS username,
-                        USR.avatar AS user_avatar
+                        USR.avatar AS user_avatar,
+                        V.description,
+                        V.comments,
+                        V.challenge_id,
+                        (SELECT COUNT(id) FROM visualcomment WHERE vizid = v.id) AS vnumcomments,
+                        (SELECT COUNT(b.id) FROM badge b INNER JOIN user_badges ub ON ub.id = b.id WHERE ub.user_id = V.user_id and ub.id = 1) as topcontrib,
+                        (SELECT COUNT(cw.challenge_id) FROM challenge_winners cw WHERE cw.first_user_id = V.user_id ) as winner,
+                        (SELECT COUNT(cw.challenge_id) FROM challenge_winners cw WHERE cw.second_user_id = V.user_id or cw.third_user_id = V.user_id) as runnerup
                         FROM visual V
                         LEFT JOIN users USR ON (USR.id = V.user_id)` +
             search +
@@ -204,8 +257,36 @@ exports.getVisualList = function(data, callback) {
     });
 }
 
+exports.getVisualUsersById = function(viz_id, callback) {
+    
+    console.log(viz_id);
+    console.log(viz_id.viz_id)
+    var query = `select v.user_id,u.firstname,u.lastname,u.avatar
+    from visual v
+    INNER JOIN users u ON u.id = v.user_id
+    where v.id = $1
+    UNION ALL 
+    select DISTINCT vu.userid as user_id,u.firstname,u.lastname,u.avatar
+    FROM visual_users vu 
+    INNER JOIN users u ON u.id = vu.userid
+    WHERE vizid = $1`;
+    
+    pool.query(query, [viz_id.viz_id], function(err, result) {
+        if (err) {
+            console.log('it didnt worked');
+            callback(err);
+        } else {
+            console.log('it worked');
+            console.log(result.rows);
+            console.log(result.rows.count);
+            callback(null, result.rows);
+        }
+    });
+}
+
+
 exports.getVisualById = function(viz_id, callback) {
-    var query = 'SELECT * FROM visual WHERE id=$1';
+    var query = 'SELECT *, (SELECT COUNT(id) FROM visualcomment WHERE vizid = v.id) AS vnumcomments FROM visual v WHERE id=$1';
     pool.query(query, [viz_id], function(err, result) {
         if (err) {
             callback(err);
@@ -214,6 +295,10 @@ exports.getVisualById = function(viz_id, callback) {
         }
     });
 }
+
+
+
+
 exports.chekcVisualExists = function(viz_id, user_id, callback) {
     var query = 'SELECT * FROM visual WHERE id=$1 AND user_id=$2';
     pool.query(query, [viz_id, user_id], function(err, result) {
@@ -273,7 +358,10 @@ exports.updateVisual = (client, data, callback) => {
           embed_code=$8,
           data_src=$9,
           seq_no=$10,
-          updated_at=Default
+          updated_at=Default,
+          description=$13,
+          comments=$14,
+          challenge_id = $15
         WHERE
           id=$11 AND user_id=$12`;
 
@@ -289,13 +377,43 @@ exports.updateVisual = (client, data, callback) => {
         data.data_src,
         data.seq_no,
         data.id,
-        data.user_id
+        data.user_id,
+        data.description,
+        data.comments,
+        data.challenge_id
     ];
     if (client) {
         client.query(query, dataArray, function(err, result) {
             if (err) {
                 callback(err);
             } else {
+
+                var updatechallenge = "";
+                updatechallenge = "UPDATE challenge_visuals SET active = 'false' WHERE viz_id = $1 ";
+                var challArray = [data.id];
+                client.query(updatechallenge, challArray, function(err, result){});
+                if(data.challenge_id != null )
+                {
+                    updatechallenge = "INSERT INTO challenge_visuals (challenge_id, viz_id, active) VALUES ($1, $2, 'true')"
+                    var challArray2 = [data.challenge_id,data.id];
+                    client.query(updatechallenge, challArray2, function(err, result){});
+                }
+                
+                if(data.selectedIds != null && data.selectedIds.length > 0)
+                {
+                    var i;
+                    var clearUsers = "DELETE FROM visual_users WHERE vizid = $1";
+                    var vizArray = [data.id];
+                    client.query(clearUsers, vizArray, function(err, result){});
+                    var updateUsers = "INSERT INTO visual_users(vizid, userid) VALUES ($1, $2)";
+                    //console.log(data.selectedIds[].length);
+                    for(i = 0; i < data.selectedIds.length; i++ )
+                    {
+                        var usrArray = [data.id, data.selectedIds[i].id];
+                        client.query(updateUsers, usrArray, function(err, result){});
+                    }
+                    
+                }
                 callback(null, result);
             }
         });
@@ -563,6 +681,7 @@ exports.updateVizOfDay = (category_id, viz_id, addFlag, callback) => {
 
 
 exports.getUpvoteById = function(user_id, viz_id, callback) {
+    console.log("getUpvoteById");
     var query = `SELECT * 
                     FROM upvote
                     WHERE user_id=$1 AND viz_id=$2`;
@@ -577,6 +696,7 @@ exports.getUpvoteById = function(user_id, viz_id, callback) {
 
 
 exports.createUpvote = (user_id, viz_id, callback) => {    
+    console.log("createUpvote");
     var query = `
         INSERT INTO
           upvote
@@ -600,6 +720,7 @@ exports.createUpvote = (user_id, viz_id, callback) => {
 }
 
 exports.updateVisualVote = (viz_id, callback) => {    
+    console.log("updateVisualVote");
     var query = `
         UPDATE visual 
         SET upvote=upvote+1,updated_at=Default

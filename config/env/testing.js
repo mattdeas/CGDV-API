@@ -11,7 +11,7 @@ module.exports = {
     port: 5432,
     user: 'postgres',
     password: '',
-    database: 'cgdv',
+    database: 'qed_test',
     max: 10, // max number of clients in the pool
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
   },

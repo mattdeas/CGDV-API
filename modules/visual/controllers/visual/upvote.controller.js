@@ -28,6 +28,8 @@ exports.upvote = function (req, res, next) {
 
 
     function chekcVisualExists(callback) {
+      console.log("chekcVisualExists");
+      console.log("viz_id",viz_id);
       Visual.getVisualById(viz_id, function(err, results) {
         if (err) {
           callback(err);
@@ -40,6 +42,7 @@ exports.upvote = function (req, res, next) {
     }
 
     function checkNUpvoteVisual(callback) {
+      console.log("checkNUpvoteVisual");
       if(user_id){
         Visual.getUpvoteById(user_id, viz_id, function(err, results) {
               if (err) {

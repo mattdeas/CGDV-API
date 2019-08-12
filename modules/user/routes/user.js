@@ -10,6 +10,11 @@ const stratagy = require(path.resolve('modules/stratagy'));
 
 module.exports = function(app) {
     // user Controller
+
+    //togglebadge(user_id, badge_id): Observable<any> {
+    //    return this.http.put(API_URL+'api/user/badges/'+user_id,badge_id);
+    //  }
+
     var user = require('../controllers/userController');
 
     app.route('/api/user/register')
@@ -18,6 +23,11 @@ module.exports = function(app) {
             validate.registerUser,
             user.userRegister
         );
+    app.route('/api/user/badges')
+    .put(
+        stratagy.isAdmin,
+        user.toggleTopBadge
+    );
     app.route('/api/admin/register')
         .post(
             stratagy.isSuperAdmin,
@@ -29,7 +39,10 @@ module.exports = function(app) {
             stratagy.isAdmin,
             user.getUserList
         );
-    
+    app.route('/api/user/listall')
+        .get(
+            user.getUserListAll
+        );
     app.route('/api/user/inTeam')
         .get(            
             user.getTeamMembers
@@ -41,7 +54,7 @@ module.exports = function(app) {
 
     app.route('/api/user/:id')
         .get(
-            stratagy.isAuthorized,
+            //stratagy.isAuthorized,
             user.getUserProfile
         )
         .put(
@@ -52,5 +65,8 @@ module.exports = function(app) {
             stratagy.isAdmin,
             user.deleteUser
         );
-
+    app.route('/api/userip/:ipaddress')
+            .get(
+                user.getIPAddressInfo
+            );
 };

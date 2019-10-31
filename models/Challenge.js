@@ -297,7 +297,8 @@ exports.getChallengeList = function(data, callback) {
     (SELECT v.title FROM visual v WHERE v.id = CW.third_viz_id) AS ThirdTitle,
     (SELECT v.avatar FROM visual v WHERE v.id = CW.first_viz_id) AS FirstVizAvatar,
     (SELECT v.avatar FROM visual v WHERE v.id = CW.second_viz_id) AS SecondVizAvatar,
-    (SELECT v.avatar FROM visual v WHERE v.id = CW.third_viz_id) AS ThirdVizAvatar
+    (SELECT v.avatar FROM visual v WHERE v.id = CW.third_viz_id) AS ThirdVizAvatar,
+    C.notificationshow, C.embedded_path, C.embedded_img_local
     FROM challenge C
     LEFT JOIN challenge_winners CW ON CW.challenge_id = C.id ` +
         search +

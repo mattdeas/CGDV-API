@@ -62,7 +62,8 @@ exports.userRegister = (client, data, callback) => {
         data.role,
         data.seq_no || 1
     ];
-
+    console.log('registration');
+    console.log(data.university_id);
     client.query(query, dataArray, function(err, result) {
         if (err) {
             callback(err);
@@ -239,7 +240,7 @@ exports.getUsersAll = function(data, callback) {
 }
 
 exports.checkEmailExist = function(email, callback) {
-
+    console.log('CheckEmailExist');
     var query = 'SELECT * FROM users WHERE email=$1';
     pool.query(query, [email], function(err, result) {
         if (err) {

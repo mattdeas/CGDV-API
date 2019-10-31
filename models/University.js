@@ -135,9 +135,10 @@ exports.addUniversity = function(data, callback) {
 
     var dataArray = [
         data.name,
-        data.country_id,
+        data.country_id || null,
         data.avatar || null
     ];
+
     pool.query(query, dataArray, function(err, result) {
         if (err) {
             callback(err);

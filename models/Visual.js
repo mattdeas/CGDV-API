@@ -134,14 +134,19 @@ exports.getVisualList = function(data, callback) {
         offset = (page - 1) * recordPerPage;
     }
     var search = ' WHERE TRUE';
-    console.log('here is vis list',data.viz_id);
+    //console.log('here is vis list',data.viz_id);
     if (data.viz_id) {
         search += `  AND V.id=${data.viz_id} `;
     }
 
     if (data.user_id) {
         search += `  AND V.user_id=${data.user_id} `;
+    }else
+    {
+        //search += ` AND (V.challenge_id IS NULL)  `;
+        //search += ` AND (V.challenge_id IS NULL) OR V.Challenge_id in (SELECT id from challenge where Enddate <= now()) `;
     }
+
     if (data.country_id) {
         search += `  AND V.country_id=${data.country_id} `;
     }
